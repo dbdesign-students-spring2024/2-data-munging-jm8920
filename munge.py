@@ -13,6 +13,10 @@ def convert_temp(celsius):
     formatted_fahrenheit = f"{fahrenheit:.1f}"
     return formatted_fahrenheit
 
+# Pre-process data
+cleaned_lines = []
+column_headings_encountered = False
+
 # Remove comment lines that start with ‘#’
 cleaned_lines = [line for line in data if not line.startswith("#")]
 
