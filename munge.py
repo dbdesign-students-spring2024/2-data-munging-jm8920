@@ -4,20 +4,19 @@ with open('data/GLB.Ts+dSST.txt', 'r') as file:
     data = file.readlines()
 
 cleaned_data = []
-collect_data = False
+process_data = False
 
 # Remove spaces
 for line in data:
     line = line.strip()
 
-# Test if a line starts with "Year" 
+# Remove all lines with notes
+# Append the line starts with "Year" to cleaned_data
     if line.startswith("Year"):
-        collect_data = True
+        process_data = True
         header = line  
         continue
-
-# Append the line to cleaned_data
-    if collect_data and line:
+    if process_data and line:
         values = line.split()
 
 # Handle the missing data
