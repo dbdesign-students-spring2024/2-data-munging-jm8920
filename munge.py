@@ -1,36 +1,44 @@
-# Import necessary library for CSV writing
-import csv
+# Place code below to do the munging part of this assignment.
 
-def read_file_lines(file_path):
-    with open(file_path, 'r') as file:
-        return file.readlines()
+with open('data/GLB.Ts+dSST.txt', 'r') as file:
+    data = file.readlines()
 
-def filter_and_transform_data(data_lines):
+cleaned_data = []
+process_data = False
 
-    processed_lines = []
-    start_processing = False
-    for line in data_lines:
-        line = line.strip()
-        if line.startswith("Year"):
-            start_processing = True
-            header_line = line
-            continue
-        if start_processing and line:
-            values = line.split()
-            values = ['NaN' if v == '***' or v == '****' else v for v in values]
-            values = [f"{float(v) * 0.018 :.1f}" if v.isdigit() else v for v in values]
-            processed_lines.append(values)
-    return header_line, processed_lines
+# Remove spaces
+for line in data:
+    line = line.strip()
 
-def write_to_csv_file(header, cleaned_data, output_file_path):
-    """Writes the cleaned data into a CSV file with the given header."""
-    with open(output_file_path, "w", newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(header.split())
-        writer.writerows(cleaned_data)
+# Remove all lines with notes
+# Append the line starts with "Year" to cleaned_data
+    if line.startswith("Year"):
+        process_data = True
+        header = line  
+        continue
+    if process_data and line:
+        values = line.split()
 
-# Original code logic with function calls
-data = read_file_lines('data/GLB.Ts+dSST.txt')
-header, cleaned_data = filter_and_transform_data(data)
+# Handle the missing data
+        if values[0].isdigit():
+            values = ['NaN' if v in ('***', '****') else v for v in values]
+
+# Convert temperature to Fahrenheit
+            for i in range(1, len(values) - 1):
+                if values[i] != 'NaN':
+                    values[i] = "{:.1f}".format(float(values[i]) * 0.018)
+            cleaned_data.append(values)
+
 new_filename = "data/clean_data.csv"
-write_to_csv_file(header, cleaned_data, new_filename)
+
+# Write the data into CSV file
+with open(new_filename, "w") as csv_file:
+    header_values = header.split()
+    csv_file.write(header_values[0] + ",")
+    csv_file.write(",".join(header_values[1:-1]) + ",")
+    csv_file.write(header_values[-1] + "\n")
+
+    for row in cleaned_data:
+        csv_file.write(row[0] + ",")
+        csv_file.write(",".join(row[1:-1]) + ",")
+        csv_file.write(row[-1] + "\n")
