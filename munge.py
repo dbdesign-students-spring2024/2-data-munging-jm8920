@@ -21,11 +21,11 @@ for line in data:
 
 # Handle the missing data
         if values[0].isdigit():
-            values = ['Nan' if v in ('***', '****') else v for v in values]
+            values = ['NaN' if v in ('***') else v for v in values]
 
 # Convert temperature to Fahrenheit
             for i in range(1, len(values) - 1):
-                if values[i] != 'nan':
+                if values[i] != 'NaN':
                     values[i] = "{:.1f}".format(float(values[i]) * 0.018)
             cleaned_data.append(values)
 
