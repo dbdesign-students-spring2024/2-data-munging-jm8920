@@ -1,3 +1,5 @@
+# Place code below to do the munging part of this assignment.
+
 import csv
 
 def average(decade_data):
