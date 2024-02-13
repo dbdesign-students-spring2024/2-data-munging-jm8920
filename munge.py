@@ -4,41 +4,38 @@ with open('data/GLB.Ts+dSST.txt', 'r') as file:
     data = file.readlines()
 
 cleaned_data = []
-process_data = False
+is_data_section = False
 
-# Remove spaces
+# Remove all the spaces
 for line in data:
     line = line.strip()
 
 # Remove all lines with notes
-# Append the line starts with "Year" to cleaned_data
     if line.startswith("Year"):
-        process_data = True
+        is_data_section = True
         header = line  
         continue
-    if process_data and line:
+    if is_data_section and line:
         values = line.split()
 
 # Handle the missing data
         if values[0].isdigit():
-            values = ['NaN' if v in ('***', '****') else v for v in values]
-
+            for index, value in enumerate(values):
+                if value in ('***', '****'):
+                    values[index] = 'nan'
+            
 # Convert temperature to Fahrenheit
             for i in range(1, len(values) - 1):
-                if values[i] != 'NaN':
+                if values[i] != 'nan':
                     values[i] = "{:.1f}".format(float(values[i]) * 0.018)
             cleaned_data.append(values)
 
 new_filename = "data/clean_data.csv"
 
-# Write the data into CSV file
+# Write the data into the CSV file
 with open(new_filename, "w") as csv_file:
     header_values = header.split()
-    csv_file.write(header_values[0] + ",")
-    csv_file.write(",".join(header_values[1:-1]) + ",")
-    csv_file.write(header_values[-1] + "\n")
+    csv_file.write(",".join(header_values) + "\n")
 
     for row in cleaned_data:
-        csv_file.write(row[0] + ",")
-        csv_file.write(",".join(row[1:-1]) + ",")
-        csv_file.write(row[-1] + "\n")
+        csv_file.write(",".join(row) + "\n")
