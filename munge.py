@@ -5,9 +5,8 @@ with open('data/GLB.Ts+dSST.txt', 'r') as file:
 cleaned_data = []
 collect_data = False
 
-# Process each line of raw data
+# Remove spaces
 for line in data:
-    # Remove whitespace
     line = line.strip()
 
 # Test if a line starts with "Year" 
@@ -19,7 +18,6 @@ for line in data:
 # Append the line to cleaned_data
     if collect_data and line:
         values = line.split()
-
 
 # Handle the missing data
         if values[0].isdigit():
