@@ -1,49 +1,47 @@
 # Place code below to do the munging part of this assignment.
-original_data_file = 'data/GLB.Ts+dSST.txt'
-munged_data_file = 'data/clean_data.csv'
-heading_string = 'Year   Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec    J-D D-N    DJF  MAM  JJA  SON  Year'
+with open('data/GLB.Ts+dSST.txt', 'r') as file:
+    raw_data = file.readlines()
 
-# Read the data file 
-f = open('data/GLB.Ts+dSST.txt','r')
-data = f.readlines()
+cleaned_data = []
+collect_data = False
 
-# Convert temperature anomalies to Farenheit
-def convert_temp(celsius):
-    fahrenheit = celsius * 9/5
-    formatted_fahrenheit = f"{fahrenheit:.1f}"
-    return formatted_fahrenheit
+# Process each line of raw data
+for line in raw_data:
+    # Remove whitespace
+    line = line.strip()
 
-# Pre-process data
-cleaned_lines = []
-column_headings_encountered = False
+    # if a line starts with "Year," it's the header, so start collecting data
+    if line.startswith("Year"):
+        collect_data = True
+        header = line  # store the header for later use
+        continue
 
-# Remove comment lines that start with ‘#’
-cleaned_lines = [line for line in data if not line.startswith("#")]
+    # Append the line to cleaned_data
+    if collect_data and line:
+        values = line.split()
+        # check if the first box contains numeric data
+        if values[0].isdigit():
+            
+        # Handle missing data by replacing them with 'NaN'
+            values = ['NaN' if v in ('***', '****') else v for v in values]
+            # convert temperature anomalies to Fahrenheit (excl. the "Year" columns)
+            for i in range(1, len(values) - 1):
+                if values[i] != 'NaN':
+                    values[i] = "{:.1f}".format(float(values[i]) * 1.8 / 100)
+            cleaned_data.append(values)
 
-# Remove all blank lines
-cleaned_lines_no_empty = [line for line in data if line.strip()]
+csv_filename = "clean_data.csv"
 
-# Handle the missing data
-def missing_data(value):
-    return value if value != "***" else "NaN"
+# open CSV file for writing
+with open(csv_filename, "w") as csv_file:
+    # write the header row with separate cells
+    header_values = header.split()
+    csv_file.write(header_values[0] + ",")
+    csv_file.write(",".join(header_values[1:-1]) + ",")
+    csv_file.write(header_values[-1] + "\n")
 
-# Remove all but the first line of column headings.
-lines_with_header = [data[0]]
-for line in data[1:]:
-    if line != heading_string:
-        lines_with_header.append(line)
-
-# Remove all lines with notes
-
-# Convert to CSV format, using commas as a separator
-csv_lines = []
-for line in data:
-    parts = line.strip().split()
-    csv_line = ",".join(parts) + "\n"
-    csv_lines.append(csv_line)
-
-# Write the CSV data to a new file
-munged_data_file = "data/clean_data.csv"
-with open(munged_data_file, "w") as csv_file:
-    csv_file.writelines(csv_lines)
-
+    # write cleaned data rows with separate cells
+    for row in cleaned_data:
+        csv_file.write(row[0] + ",")
+        csv_file.write(",".join(row[1:-1]) + ",")
+        csv_file.write(row[-1] + "\n")
