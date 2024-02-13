@@ -31,7 +31,7 @@ for line in data:
                     values[i] = "{:.1f}".format(float(values[i]) * 0.018)
             cleaned_data.append(values)
 
-new_filename = "clean_data.csv"
+new_filename = "data/clean_data.csv"
 
 # Write the data into CSV file
 with open(new_filename, "w") as csv_file:
