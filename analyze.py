@@ -1,39 +1,30 @@
-# Place code below to do the analysis part of the assignment.
-
 import csv
 
-def analyze():
-    file = open("data/clean_data.csv", "r")
+with open('data/clean_data.csv', 'r') as csvfile:
+    data = csv.reader(csvfile)
+    header = next(data) 
 
-    averages = []
+# Build a list to store the decade data
+    decade = 1880
+    decade_list = []
 
-    csv_reader = csv.DictReader(file)
-    for line in csv_reader:
-        averages.append(float(line["J-D"]))
-
-    # taking the average
-    result = 0
-    counter = 0
-    lower = 1880
-    upper = 1889
-
-    for i in range(0, len(averages)):
-        if i % 10 ==  9 and i != 0:
-            result += averages[i]
-            final_averages = result / 10
-            print(lower, " to ", upper, ": ", round(final_averages, 2), sep="")
-            
-            result = 0
-            counter += 1
-            upper += 10
-            lower += 10
-        
-        elif i + 1 == len(averages):
-            result += averages[i]
-            final_averages = result / (i % 10 + 1)
-            print(lower, " to ", (lower + (i % 10)), ": ",round(final_averages, 2), sep="")
-        
+    for row in data:
+        year = int(row[0])  
+        if year < decade + 10:
+            decade_list.append(row)
         else:
-            result += averages[i] 
+            total = 0
+            count = 0
 
-analyze()
+            for year_data in decade_list:
+                for month in range(1, 13):
+                    temp = year_data[month]
+                    if temp != "NaN":
+                        total += float(temp)
+                        count += 1
+            avg_anomaly = total / count if count != 0 else "NaN"
+            
+            # Output the average temperature
+            print(f"{decade} to {decade + 9}: {avg_anomaly:.2f}°F")
+            decade += 10
+            decade_list = [row]
