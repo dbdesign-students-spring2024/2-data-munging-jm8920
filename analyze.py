@@ -2,8 +2,10 @@
 
 import csv
 
+# Open the CSV file and read data
 with open('data/clean_data.csv', 'r') as csvfile:
     data = csv.reader(csvfile)
+     # Skip the header
     header = next(data) 
 
     decade_start = 1880
@@ -25,7 +27,9 @@ with open('data/clean_data.csv', 'r') as csvfile:
                         count += 1
             avg_anomaly = total / count if count != 0 else "NaN"
             
-            # Output
+            # Calculate and print the average 
             print(f"{decade_start} to {decade_start + 9}: {avg_anomaly:.2f}°F")
+            
+            # Prepare for the next decade
             decade_start += 10
             decade_data = [row]
