@@ -21,7 +21,7 @@ for line in data:
 
 # Handle the missing data
         if values[0].isdigit():
-            values = ['NaN' if v in ('***', '****') else v for v in values]
+            values = ['Nan' if v in ('***', '****') else v for v in values]
 
 # Convert temperature to Fahrenheit
             for i in range(1, len(values) - 1):
