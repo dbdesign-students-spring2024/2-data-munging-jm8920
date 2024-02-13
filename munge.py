@@ -26,7 +26,7 @@ for line in data:
 
 # Convert temperature to Fahrenheit
             for i in range(1, len(values) - 1):
-                if values[i] != 'NaN':
+                if values[i] != 'nan':
                     values[i] = "{:.1f}".format(float(values[i]) * 0.018)
             cleaned_data.append(values)
 
