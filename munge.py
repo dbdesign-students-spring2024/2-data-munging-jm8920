@@ -1,44 +1,32 @@
 # Place code below to do the munging part of this assignment.
-with open('data/GLB.Ts+dSST.txt', 'r') as file:
-    data = file.readlines()
 
-cleaned_data = []
-collect_data = False
+import csv
 
-# Remove spaces
-for line in data:
-    line = line.strip()
+with open('data/clean_data.csv', 'r') as csvfile:
+    data = csv.reader(csvfile)
+    header = next(data) 
 
-# Test if a line starts with "Year" 
-    if line.startswith("Year"):
-        collect_data = True
-        header = line  
-        continue
+# Build a list to store the decade data
+    decade_start = 1880
+    decade_list = []
 
-# Append the line to cleaned_data
-    if collect_data and line:
-        values = line.split()
+    for row in data:
+        year = int(row[0])  
+        if year < decade_start + 10:
+            decade_list.append(row)
+        else:
+            total = 0
+            count = 0
 
-# Handle the missing data
-        if values[0].isdigit():
-            values = ['NaN' if v in ('***', '****') else v for v in values]
-
-# Convert temperature to Fahrenheit
-            for i in range(1, len(values) - 1):
-                if values[i] != 'NaN':
-                    values[i] = "{:.1f}".format(float(values[i]) * 0.018)
-            cleaned_data.append(values)
-
-new_filename = "data/clean_data.csv"
-
-# Write the data into CSV file
-with open(new_filename, "w") as csv_file:
-    header_values = header.split()
-    csv_file.write(header_values[0] + ",")
-    csv_file.write(",".join(header_values[1:-1]) + ",")
-    csv_file.write(header_values[-1] + "\n")
-
-    for row in cleaned_data:
-        csv_file.write(row[0] + ",")
-        csv_file.write(",".join(row[1:-1]) + ",")
-        csv_file.write(row[-1] + "\n")
+            for year_data in decade_list:
+                for month in range(1, 13):
+                    temperature = year_data[month]
+                    if temperature != "NaN":
+                        total += float(temperature)
+                        count += 1
+            avg_anomaly = total / count if count != 0 else "NaN"
+            
+            # Output the average temperature
+            decade_start += 10
+            decade_list = [row]
+            print(f"{decade_start} to {decade_start + 9}: {avg_anomaly:.2f}°F")
